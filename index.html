@@ -81,19 +81,39 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://use.fontawesome.com/eb557185d4.js"></script>
     <script>
+        // on click of search button make ajax call with user inputs
+        $("#search-button").on("click", function (e) {
+            e.preventDefault();
+            var searchTerm = $("#search-term").val() || "USA";
+            var recordsNumber = $("#num-records").val();
+            recordsNumber = parseInt(recordsNumber);
+            var startYear = $("#start-year").val() || 2000;
+            var beginDate = startYear + "0101";
+            var endYear = $("#end-year").val() || 2017;
+            var endDate = endYear + "0101";
+            // build url to query ny times database
+            var url = "https://api.nytimes.com/svc/search/v2/articlesearch.json";
+            url += '?' + $.param({
+                'api-key': "94244ee038684dd79e8757c1ff7a54a6",
+                'q': searchTerm,
+                'page': 1,
+                'begin_date': beginDate,
+                'end_date': "20011112"
+            });
+            $.ajax({
+                url: url,
+                method: 'GET',
+            }).done(function (result) {
+                console.log(result);
+                var res = result.response;
+                var headline = res.docs[0].headline.kicker;
+                var author = res.docs[0].byline.original;
+                //var section = res.docs[0].section_name;
 
-        $("#search-button").on("click", function () {
-            var search = $("#search-term").val();
-            var numRecords = $("#num-records").val();
-            var startYear = $("#start-year").val();
-            var endYear = $("#end-year").val();
-
+            }).fail(function (err) {
+                throw err;
+            })
         });
-        $("#clear-results").on("click", function () {
-            $("#placeholder").empty();
-
-        });
-
     </script>
 </body>
 
